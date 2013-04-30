@@ -34,6 +34,8 @@ class ProductsControllerTest < ActionController::TestCase
   test "should show product" do
     get :show, id: @product
     assert_response :success
+    assert_select 'p', :minimum => 4
+   # assert_select 'p', 'Programming Ruby 1.9'
   end
 
   test "should get edit" do
@@ -53,4 +55,7 @@ class ProductsControllerTest < ActionController::TestCase
 
     assert_redirected_to products_path
   end
+
+
+
 end
