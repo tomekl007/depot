@@ -13,11 +13,16 @@ class LineItemsController < ApplicationController
   # GET /line_items/1
   # GET /line_items/1.json
   def show
-    @line_item = LineItem.find(params[:id])
-
+    begin
+      @line_item = LineItem.find(params[:id])
+    rescue ActiveRecord::RecordNotFound
+      logger.error "Attempt to access invalid lineItem #{params[:id]}"
+      redirect_to store_url, :notice => 'Invalid lineItem'
+     else
     respond_to do |format|
       format.html # show.html.erb
       format.json { render json: @line_item }
+      end
     end
   end
 
@@ -41,8 +46,11 @@ class LineItemsController < ApplicationController
   # POST /line_items.json
   def create
     @cart = current_cart
-    product = Product.find(params[:product_id])
-    @line_item = @cart.line_items.build(:product => product)
+    product = Product.find(params[:product_id])  #The params object is important inside Rails applications.
+    #It holds all of the parameters passed in a browser request
+    @line_item = @cart.add_product(product.id)
+
+    session[:counter] = 0
 
     respond_to do |format|
       if @line_item.save
@@ -75,11 +83,13 @@ class LineItemsController < ApplicationController
   # DELETE /line_items/1
   # DELETE /line_items/1.json
   def destroy
+
     @line_item = LineItem.find(params[:id])
+    logger.info "destroy line item : #{params[:id]}"
     @line_item.destroy
 
     respond_to do |format|
-      format.html { redirect_to line_items_url }
+      format.html { redirect_to current_cart }
       format.json { head :no_content }
     end
   end

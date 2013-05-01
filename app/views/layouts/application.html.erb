@@ -21,6 +21,7 @@
     <a href="http://www..../news">News</a><br />
     <a href="http://www..../contact">Contact</a><br />
      <p><%= Time.now %></p>
+    <p> <%= pluralize(session[:counter], "page load") if session[:counter] >= 5 %></p>
   </div>
   <div id="main">
     <%= yield %><!-- <label id="code.depot.e.include"/> -->
